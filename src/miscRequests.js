@@ -400,16 +400,17 @@ module.exports = {
     }
 
     const { data, headers } = response;
-
-    if (data && data.error) {
-      throw new Error(data.error);
-    }
     
     // Explicitly check for reCAPTCHA in the response HTML.
     if (typeof data === 'string' && data.includes('g-recaptcha')) {
         throw new Error('Please confirm that you are not a robot by clicking the captcha box.');
     }
-
+    
+    // Handle error messages from TradingView's JSON response
+    if (data && data.error) {
+      throw new Error(data.error);
+    }
+    
     const cookies = headers?.['set-cookie'];
     if (!cookies) {
         throw new Error('Login failed: No cookies received from TradingView. This may be due to incorrect credentials, a captcha, or a network issue.');
