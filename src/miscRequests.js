@@ -1,4 +1,5 @@
-const os = require('os');
+
+
 const axios = require('axios');
 
 const PineIndicator = require('./classes/PineIndicator');
@@ -377,45 +378,77 @@ module.exports = {
    * @param {string} [UA] Custom UserAgent
    * @returns {Promise<User>} Token
    */
-  async loginUser(username, password, remember = true, UA = 'TWAPI/3.0') {
-    const { data, headers } = await axios.post(
+  async loginUser(username, password, remember = true, UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36') {
+    const instance = axios.create(); // Create a clean instance to avoid interceptor pollution
+    const response = await instance.post(
       'https://www.tradingview.com/accounts/signin/',
       `username=${username}&password=${password}${remember ? '&remember=on' : ''}`,
       {
         headers: {
+          origin: 'https://www.tradingview.com',
           referer: 'https://www.tradingview.com',
           'Content-Type': 'application/x-www-form-urlencoded',
-          'User-agent': `${UA} (${os.version()}; ${os.platform()}; ${os.arch()})`,
+          'User-agent': UA,
         },
+        maxRedirects: 0,
         validateStatus,
       },
     );
 
-    const cookies = headers['set-cookie'];
+    if (!response) {
+      throw new Error('Login failed: No response from TradingView server.');
+    }
 
-    if (data.error) throw new Error(data.error);
+    const { data, headers } = response;
 
+    if (data && data.error) {
+      throw new Error(data.error);
+    }
+    
+    // Explicitly check for reCAPTCHA in the response HTML.
+    if (typeof data === 'string' && data.includes('g-recaptcha')) {
+        throw new Error('Login failed: TradingView is presenting a reCAPTCHA. Please try logging in via your browser first.');
+    }
+
+    const cookies = headers?.['set-cookie'];
+    if (!cookies) {
+        throw new Error('Login failed: No cookies received from TradingView. This may be due to incorrect credentials, a captcha, or a network issue.');
+    }
+    
     const sessionCookie = cookies.find((c) => c.includes('sessionid='));
-    const session = (sessionCookie.match(/sessionid=(.*?);/) ?? [])[1];
-
     const signCookie = cookies.find((c) => c.includes('sessionid_sign='));
+
+    if (!sessionCookie || !signCookie) {
+        throw new Error('Login failed: Session cookies not found in response.');
+    }
+
+    const session = (sessionCookie.match(/sessionid=(.*?);/) ?? [])[1];
     const signature = (signCookie.match(/sessionid_sign=(.*?);/) ?? [])[1];
+    
+    if (!session || !signature) {
+        throw new Error('Login failed: Could not extract session details from cookies.');
+    }
+
+    // In a successful redirect, data.user will be undefined.
+    // In a successful direct API response, data.user should be present.
+    // We can fetch user details later if needed, the session cookies are the most critical part.
+    const user = data?.user || {};
 
     return {
-      id: data.user.id,
-      username: data.user.username,
-      firstName: data.user.first_name,
-      lastName: data.user.last_name,
-      reputation: data.user.reputation,
-      following: data.user.following,
-      followers: data.user.followers,
-      notifications: data.user.notification_count,
+      id: user.id,
+      username: user.username,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      reputation: user.reputation,
+      following: user.following,
+      followers: user.followers,
+      notifications: user.notification_count,
       session,
       signature,
-      sessionHash: data.user.session_hash,
-      privateChannel: data.user.private_channel,
-      authToken: data.user.auth_token,
-      joinDate: new Date(data.user.date_joined),
+      sessionHash: user.session_hash,
+      privateChannel: user.private_channel,
+      authToken: user.auth_token,
+      joinDate: user.date_joined ? new Date(user.date_joined) : undefined,
     };
   },
 
