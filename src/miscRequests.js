@@ -11,15 +11,16 @@ const indicators = ['Recommend.Other', 'Recommend.All', 'Recommend.MA'];
 const builtInIndicList = [];
 
 async function fetchScanData(tickers = [], columns = []) {
-  const { data } = await axios.post(
+  // Use a clean axios instance to avoid global interceptors from other libs
+  const instance = axios.create();
+  const { data } = await instance.post(
     'https://scanner.tradingview.com/global/scan',
     {
       symbols: { tickers },
       columns,
     },
-    { validateStatus },
+    { validateStatus }, // Pass validateStatus to handle non-2xx codes without throwing
   );
-
   return data;
 }
 
@@ -61,7 +62,7 @@ module.exports = {
       .flat();
 
     const rs = await fetchScanData([id], cols);
-    if (!rs.data || !rs.data[0]) return false;
+    if (!rs || !rs.data || !rs.data[0]) return false;
 
     rs.data[0].d.forEach((val, i) => {
       const [name, period] = cols[i].split('|');
