@@ -407,7 +407,7 @@ module.exports = {
     
     // Explicitly check for reCAPTCHA in the response HTML.
     if (typeof data === 'string' && data.includes('g-recaptcha')) {
-        throw new Error('Login failed: TradingView is presenting a reCAPTCHA. Please try logging in via your browser first.');
+        throw new Error('Please confirm that you are not a robot by clicking the captcha box.');
     }
 
     const cookies = headers?.['set-cookie'];
