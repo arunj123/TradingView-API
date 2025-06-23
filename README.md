@@ -1,3 +1,4 @@
+
 # TradingView API [![GitHub stars](https://img.shields.io/github/stars/Mathieu2301/TradingView-API.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Mathieu2301/TradingView-API/stargazers/)
 
 [![Tests](https://github.com/Mathieu2301/TradingView-API/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Mathieu2301/TradingView-API/actions/workflows/tests.yml)
@@ -7,7 +8,7 @@
 [![Minimum node.js version](https://badgen.net/npm/node/@mathieuc/tradingview)](https://npmjs.com/@mathieuc/tradingview)
 [![Npm package version](https://badgen.net/npm/v/@mathieuc/tradingview)](https://npmjs.com/package/@mathieuc/tradingview)
 
-Get realtime market prices and indicator values from Tradingview !
+Get technical analysis, search for markets/indicators, and access chart data from TradingView.
 
 ## 🟢 Need help with your project?
 
@@ -21,29 +22,21 @@ Join the Telegram group of the TradingView-API Community: [t.me/tradingview_api]
 
 ## Features
 
-- [x] Premium features
-- [x] Automatically backtest many strategies and try many settings in a very little time
-- [x] Get drawings you made on your chart
-- [x] Works with invite-only indicators
-- [x] Unlimited simultaneous indicators
-- [x] Realtime
-- [x] Get TradingView's technical analysis
-- [x] Replay mode + Fake Replay mode (for free plan)
-- [x] Get values from a specific date range
-- [ ] TradingView socket server emulation
-- [ ] Interract with public chats
-- [ ] Get Screener top values
-- [ ] Get Hotlists
-- [ ] Get Calendar
-- IF YOU WANT A FEATURE, ASK ME !
+- [x] Get TradingView's technical analysis for various timeframes.
+- [x] Search for markets and indicators.
+- [x] Fetch chart data for specific symbols and timeframes.
+- [x] Get drawings you made on your chart (requires authentication).
+- [x] Works with invite-only indicators (requires authentication).
+- [x] Manage indicator access permissions for other users.
+- [ ] Realtime Data via WebSocket (Note: Currently under review/rework in this version)
+- [ ] Replay Mode (Note: Currently under review/rework in this version)
 
 ## Possibilities
 
-- Trading bot
-- Discord alerts
-- Hard backtest
-- Machine Learning based indicator
-- Free replay mode for all timeframes
+- Custom data analysis
+- Discord alerts based on TA
+- Hard backtesting of strategies
+- Machine Learning based on indicator data
 
 ___
 
@@ -63,7 +56,7 @@ npm i github:Mathieu2301/TradingView-API
 
 ## Examples
 
-You can find all the examples and snippets in `./examples` folder.
+You can find all the examples and snippets in the `./examples` folder.
 
 ## Before opening an issue
 
@@ -74,3 +67,6 @@ ___
 
  If you have errors in console or unwanted behavior,
  please create an issue [here](https://github.com/Mathieu2301/Tradingview-API/issues).
+
+
+    
